@@ -17,6 +17,13 @@ const useAuthStore = create(persist((set) =>({
     set({accessTokenData: response.data.user})
   },
   setRefreshToken: (refreshToken) => { set(refreshToken) },
+  logout: () => {
+    set({
+      accessToken: undefined,
+      accessTokenData: undefined,
+      refreshToken: undefined,
+    })
+  }
 }),
   {
     name: 'auth-storage'
