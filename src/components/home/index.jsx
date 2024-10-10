@@ -21,7 +21,7 @@ const Home = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       let offset = (page - 1) * pageSize
-      let limit = offset + pageSize
+      let limit = offset + Number(pageSize)
       const params = {
         offset,
         limit,

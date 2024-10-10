@@ -1,6 +1,7 @@
 import React from 'react'
+import moment from 'moment'
 
-const ArticleFeed = (feedType, articles, page, totalPage, changeFeedType) => {
+const ArticleFeed = ({feedType, articles, page, totalPage, changeFeedType}) => {
   return (
     <>
       <div className="feed-toggle">
@@ -13,6 +14,46 @@ const ArticleFeed = (feedType, articles, page, totalPage, changeFeedType) => {
           </li>
         </ul>
       </div>
+
+      {
+        articles && Array.isArray(articles) && articles.map((article) => {
+          let dateFormatted = moment(article.createdAt).format('MMM Do, YYYY')
+
+          return (
+            <div className="article-preview">
+              <div className="article-meta">
+                <a href={`/profile/${article.author.username}`}><img
+                  src=""/></a>
+                <div className="info">
+                  <a href={`/profile/${article.author.username}`} className="author">{article.author.username}</a>
+                  <span className="date">{dateFormatted}</span>
+                </div>
+                <button
+                  className="btn btn-outline-primary btn-sm pull-xs-right">
+                  <i className="ion-heart"></i> {article.favoritesCount}
+                </button>
+              </div>
+              <a href={`/article/${article.slug}`}
+                 className="preview-link">
+                <h1>{article.title}</h1>
+                <p>{article.description}</p>
+                <span>Read more...</span>
+                <ul className="tag-list">
+                  {
+                    article.tagList && Array.isArray(article.tagList) && article.tagList.map((tag) => {
+                      return (
+                        <li
+                          className="tag-default tag-pill tag-outline">{tag}
+                        </li>
+                      )
+                    })
+                  }
+                </ul>
+              </a>
+            </div>
+          )
+        })
+      }
 
       <div className="article-preview">
         <div className="article-meta">
