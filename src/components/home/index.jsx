@@ -30,6 +30,10 @@ const Home = () => {
       if (feedType === 'GLOBAL') {
         const responseData = await getData('/articles?' + searchParams, accessToken)
         setArticles(responseData.articles)
+        let articlesCount = responseData.articlesCount
+        let totalPage = articlesCount / 10
+        totalPage += articlesCount % 10 == 0 ? 1 : 0
+        setTotalPage(totalPage)
       }
     }
 
@@ -46,9 +50,10 @@ const Home = () => {
             <ArticleFeed
               feedType={feedType}
               articles={articles}
-              page={page}
+              currentPage={page}
               totalPage={totalPage}
               changeFeedType={changeFeedType}
+              setPage={setPage}
             />
           </div>
 
