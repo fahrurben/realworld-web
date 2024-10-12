@@ -1,29 +1,20 @@
 import React from 'react'
 import moment from 'moment'
 import _ from 'lodash'
+import useAuthStore from '../../store/auth_store.js'
 
-const ArticleFeed = ({feedType, articles, currentPage, totalPage, changeFeedType, setPage}) => {
+const ArticleFeed = ({feedType, articles, currentPage, totalPage, changeFeedType, setPage, toggleFavorited}) => {
+  const {accessTokenData, accessToken} = useAuthStore()
   let pages = _.range(1, totalPage+1)
 
   return (
     <>
-      <div className="feed-toggle">
-        <ul className="nav nav-pills outline-active">
-          <li className="nav-item">
-            <a className="nav-link" href="">Your Feed</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link active" href="">Global Feed</a>
-          </li>
-        </ul>
-      </div>
-
       {
         articles && Array.isArray(articles) && articles.map((article) => {
           let dateFormatted = moment(article.createdAt).format('MMM Do, YYYY')
 
           return (
-            <div className="article-preview">
+            <div key={article.id} className="article-preview">
               <div className="article-meta">
                 <a href={`/profile/${article.author.username}`}><img
                   src=""/></a>
@@ -32,7 +23,9 @@ const ArticleFeed = ({feedType, articles, currentPage, totalPage, changeFeedType
                   <span className="date">{dateFormatted}</span>
                 </div>
                 <button
-                  className="btn btn-outline-primary btn-sm pull-xs-right">
+                  className={`btn btn-outline-primary btn-sm pull-xs-right ${article.favorited ? 'active' : ''}`}
+                  onClick={() => toggleFavorited(article.slug)}
+                >
                   <i className="ion-heart"></i> {article.favoritesCount}
                 </button>
               </div>
@@ -46,6 +39,7 @@ const ArticleFeed = ({feedType, articles, currentPage, totalPage, changeFeedType
                     article.tagList && Array.isArray(article.tagList) && article.tagList.map((tag) => {
                       return (
                         <li
+                          key={tag}
                           className="tag-default tag-pill tag-outline">{tag}
                         </li>
                       )
@@ -62,7 +56,7 @@ const ArticleFeed = ({feedType, articles, currentPage, totalPage, changeFeedType
         {
           totalPage > 1 && pages && pages.map((page) => {
             return (
-              <li className={`page-item ${page === currentPage ? 'active' : ''}`}>
+              <li key={page } className={`page-item ${page === currentPage ? 'active' : ''}`}>
                 <a className="page-link" onClick={(e) => setPage(page)}>{page}</a>
               </li>
             )

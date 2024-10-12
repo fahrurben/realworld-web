@@ -38,3 +38,16 @@ export async function putData(url, data, token) {
   const {data: responseData} = await axios.put(baseUrl + url, data, config)
   return responseData
 }
+
+export async function deleteData(url, token) {
+
+  let config = {}
+  if (token) {
+    config['headers'] = {
+      'Authorization': 'Bearer ' + token
+    }
+  }
+
+  const {data: responseData} = await axios.delete(baseUrl + url, config)
+  return responseData
+}
