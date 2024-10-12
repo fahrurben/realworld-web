@@ -16,6 +16,8 @@ const Home = () => {
   const [articles, setArticles] = useState([])
   const [page, setPage] = useState(1)
   const [totalPage, setTotalPage] = useState(0)
+  const [tagList, setTagList] = useState([])
+  const [tagSelected, setTagSelected] = useState(null)
   const changeFeedType = (feedType) => setFeedType(feedType)
 
   useEffect(() => {
@@ -26,9 +28,13 @@ const Home = () => {
         offset,
         limit,
       }
+      if (feedType === 'TAG') {
+        params.tag = tagSelected
+      }
+
       const searchParams = new URLSearchParams(params);
       let responseData
-      if (feedType === 'GLOBAL') {
+      if (feedType === 'GLOBAL' || feedType === 'TAG') {
         responseData = await getData('/articles?' + searchParams, accessToken)
       } else if (feedType === 'YOURS') {
         responseData = await getData('/articles/feed?' + searchParams, accessToken)
@@ -41,11 +47,24 @@ const Home = () => {
     }
 
     fetchArticles().then(() => {})
-  }, [page, feedType])
+  }, [page, feedType, tagSelected])
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      let responseData = await getData('/tags')
+      setTagList(responseData.tags)
+    }
+    fetchTags().then(() => {})
+  }, [])
 
   const changeTab = (feedType) => {
     setPage(1)
     setFeedType(feedType)
+  }
+
+  const onTagClicked = (tag) => {
+    setTagSelected(tag)
+    changeTab('TAG')
   }
 
   const toggleFavorited = async (slug) => {
@@ -86,6 +105,17 @@ const Home = () => {
                      onClick={() => changeTab('GLOBAL')}
                   >Global Feed</a>
                 </li>
+                {
+                  tagSelected &&
+                  <li className="nav-item">
+                    <a className={`nav-link ${feedType === 'TAG'
+                      ? 'active'
+                      : ''}`}
+                       href="#"
+                       onClick={() => changeTab('TAG')}
+                    >{tagSelected}</a>
+                  </li>
+                }
               </ul>
             </div>
             <ArticleFeed
@@ -104,14 +134,13 @@ const Home = () => {
               <p>Popular Tags</p>
 
               <div className="tag-list">
-                <a href="" className="tag-pill tag-default">programming</a>
-                <a href="" className="tag-pill tag-default">javascript</a>
-                <a href="" className="tag-pill tag-default">emberjs</a>
-                <a href="" className="tag-pill tag-default">angularjs</a>
-                <a href="" className="tag-pill tag-default">react</a>
-                <a href="" className="tag-pill tag-default">mean</a>
-                <a href="" className="tag-pill tag-default">node</a>
-                <a href="" className="tag-pill tag-default">rails</a>
+                {
+                  tagList && tagList.map((tag) => {
+                    return (
+                      <a key={tag} href="#" onClick={() => onTagClicked(tag)} className="tag-pill tag-default">{tag}</a>
+                    )
+                  })
+                }
               </div>
             </div>
           </div>
