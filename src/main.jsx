@@ -10,6 +10,7 @@ import Register from './components/register/index.jsx'
 import Home from './components/home/index.jsx'
 import Login from './components/login/login.jsx'
 import Editor from './components/editor/index.jsx'
+import Settings from './components/settings/index..jsx'
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: 'editor',
         element: <Editor />
+      },
+      {
+        path: 'settings',
+        element: <Settings />
       },
     ]
   },

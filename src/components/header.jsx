@@ -26,7 +26,7 @@ const Header = () => {
           className="ion-gear-a"></i>&nbsp;Settings </a>
       </li>
       <li className="nav-item">
-        <a className="nav-link" href={`/profile/${accessTokenData?.username}`} onClick={() => logout()}>
+        <a className="nav-link" href={`/profile/${accessTokenData?.username}`}>
           <img src="" className="user-pic"/>
           {accessTokenData?.username}
         </a>

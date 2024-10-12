@@ -6,8 +6,6 @@ import { useNavigate } from 'react-router-dom'
 import { EDITING, INITIAL, LOADING } from '../../common/constant.js'
 import useAuthStore from '../../store/auth_store.js'
 import { getData, postData } from '../../common/fetch_helper.js'
-import TagsInput from 'react-tagsinput'
-import 'react-tagsinput/react-tagsinput.css'
 
 const schema = yup
 .object({
