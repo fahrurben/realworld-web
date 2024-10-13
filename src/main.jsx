@@ -11,6 +11,7 @@ import Home from './components/home/index.jsx'
 import Login from './components/login/login.jsx'
 import Editor from './components/editor/index.jsx'
 import Settings from './components/settings/index..jsx'
+import ArticleView from './components/article/index.jsx'
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
         path: 'settings',
         element: <Settings />
       },
+      {
+        path: 'article/:slug',
+        element: <ArticleView />
+      }
     ]
   },
 ])
