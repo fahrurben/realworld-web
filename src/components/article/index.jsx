@@ -3,6 +3,7 @@ import useAuthStore from '../../store/auth_store.js'
 import moment from 'moment'
 import { useNavigate, useParams } from 'react-router-dom'
 import { deleteData, getData, postData } from '../../common/fetch_helper.js'
+import Comments from './comments.jsx'
 const ArticleView = () => {
   let {slug} = useParams()
   const navigate = useNavigate()
@@ -51,6 +52,11 @@ const ArticleView = () => {
     setArticle(articleUpdated)
   }
 
+  const deleteArticle = async (slug) => {
+    const responseData = await deleteData(`/articles/${slug}`, accessToken)
+    navigate('/')
+  }
+
   return (
     <div className="article-page">
       <div className="banner">
@@ -71,7 +77,7 @@ const ArticleView = () => {
                      <button className="btn btn-sm btn-outline-secondary" onClick={() => navigate(`/editor/${article?.slug}`)}>
                        <i className="ion-edit"></i> Edit Article
                      </button>
-                     <button className="btn btn-sm btn-outline-danger">
+                     <button className="btn btn-sm btn-outline-danger" onClick={() => deleteArticle(article.slug)}>
                        <i className="ion-trash-a"></i> Delete Article
                      </button>
                    </>
@@ -123,86 +129,48 @@ const ArticleView = () => {
         <div className="article-actions">
           <div className="article-meta">
             <a href={`/profile/${article?.author?.username}`}><img
-              src={article?.image}/></a>
+              src={article?.author?.image}/></a>
             <div className="info">
-              <a href="" className="author">{article?.author?.username}</a>
+              <a href={`/profile/${article?.author?.username}`} className="author">{article?.author?.username}</a>
               <span className="date">{dateFormatted}</span>
             </div>
 
-            <button className="btn btn-sm btn-outline-secondary">
-              <i className="ion-plus-round"></i>
-              &nbsp; Follow Eric Simons
-            </button>
-            &nbsp;
-            <button className="btn btn-sm btn-outline-primary">
-              <i className="ion-heart"></i>
-              &nbsp; Favorite Article <span className="counter">(29)</span>
-            </button>
-            <button className="btn btn-sm btn-outline-secondary">
-              <i className="ion-edit"></i> Edit Article
-            </button>
-            <button className="btn btn-sm btn-outline-danger">
-              <i className="ion-trash-a"></i> Delete Article
-            </button>
+            {
+              isOwnArticle ?
+                (
+                  <>
+                    <button className="btn btn-sm btn-outline-secondary" onClick={() => navigate(`/editor/${article?.slug}`)}>
+                      <i className="ion-edit"></i> Edit Article
+                    </button>
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => deleteArticle(<article className="slug"></article>)}>
+                      <i className="ion-trash-a"></i> Delete Article
+                    </button>
+                  </>
+                ) :
+                (
+                  <>
+                    <button className={`btn btn-sm btn-outline-secondary ${article?.author?.following ? 'active': ''}`}
+                            onClick={() => article?.author?.following ? unfollowAuthor(article?.author?.username) : followAuthor(article?.author?.username)}
+                    >
+                      <i className="ion-plus-round"></i>
+                      &nbsp; Follow {article?.author?.username} <span
+                      className="counter"></span>
+                    </button>
+                    &nbsp;&nbsp;
+                    <button className={`btn btn-sm btn-outline-primary ${article?.favorited ? 'active' : ''}`}
+                            onClick={() => article?.favorited ? unfavoriteArticle(article?.slug) : favoriteArticle(article?.slug)}
+                    >
+                      <i className="ion-heart"></i>
+                      &nbsp; Favorite Post <span
+                      className="counter">({article?.favoritesCount})</span>
+                    </button>
+                  </>
+                )
+            }
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-xs-12 col-md-8 offset-md-2">
-            <form className="card comment-form">
-              <div className="card-block">
-                <textarea className="form-control"
-                          placeholder="Write a comment..." rows="3"></textarea>
-              </div>
-              <div className="card-footer">
-                <img src="http://i.imgur.com/Qr71crq.jpg"
-                     className="comment-author-img"/>
-                <button className="btn btn-sm btn-primary">Post Comment</button>
-              </div>
-            </form>
-
-            <div className="card">
-              <div className="card-block">
-                <p className="card-text">
-                  With supporting text below as a natural lead-in to additional
-                  content.
-                </p>
-              </div>
-              <div className="card-footer">
-                <a href="/profile/author" className="comment-author">
-                  <img src="http://i.imgur.com/Qr71crq.jpg"
-                       className="comment-author-img"/>
-                </a>
-                &nbsp;
-                <a href="/profile/jacob-schmidt" className="comment-author">Jacob
-                  Schmidt</a>
-                <span className="date-posted">Dec 29th</span>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="card-block">
-                <p className="card-text">
-                  With supporting text below as a natural lead-in to additional
-                  content.
-                </p>
-              </div>
-              <div className="card-footer">
-                <a href="/profile/author" className="comment-author">
-                  <img src="http://i.imgur.com/Qr71crq.jpg"
-                       className="comment-author-img"/>
-                </a>
-                &nbsp;
-                <a href="/profile/jacob-schmidt" className="comment-author">Jacob
-                  Schmidt</a>
-                <span className="date-posted">Dec 29th</span>
-                <span className="mod-options">
-              <i className="ion-trash-a"></i>
-            </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Comments article={article} />
       </div>
     </div>
   )
