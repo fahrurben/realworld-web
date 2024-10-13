@@ -31,6 +31,10 @@ const router = createBrowserRouter([
         element: <Login />
       },
       {
+        path: 'editor/:slug',
+        element: <Editor />
+      },
+      {
         path: 'editor',
         element: <Editor />
       },

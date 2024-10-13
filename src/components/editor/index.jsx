@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { EDITING, INITIAL, LOADING } from '../../common/constant.js'
 import useAuthStore from '../../store/auth_store.js'
-import { getData, postData } from '../../common/fetch_helper.js'
+import {
+  getData,
+  patchData,
+  postData,
+  putData,
+} from '../../common/fetch_helper.js'
 
 const schema = yup
 .object({
@@ -16,12 +21,14 @@ const schema = yup
 })
 
 const Editor = () => {
+  let {slug} = useParams()
   const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
     getValues,
+    reset,
     formState: {formErrors, isValid, isDirty,},
   } = useForm({
     defaultValues: {
@@ -38,9 +45,21 @@ const Editor = () => {
   const {accessToken} = useAuthStore()
 
   useEffect(() => {
-    getData('/tags').then((responseData) => {
+    const getInitialData = async () => {
+      const responseData = await getData('/tags')
       setTagOptions(responseData.tags)
-    })
+
+      if (slug) {
+        const { article } = await getData(`/articles/${slug}`)
+        reset({
+          title: article.title,
+          description: article.description,
+          body: article.body,
+        })
+        setTags(article.tagList)
+      }
+    }
+    getInitialData().then(() => {})
   }, [])
 
   const onTagChange = (event) => {
@@ -59,7 +78,11 @@ const Editor = () => {
     setStatus(LOADING)
     try {
       data['tagList'] = tags
-      let responseData = await postData('/articles', {'article': data}, accessToken)
+      if (slug) {
+        await patchData(`/articles/${slug}`, {'article': data}, accessToken)
+      } else {
+        await postData('/articles', {'article': data}, accessToken)
+      }
       navigate('/')
     } catch (e) {
       if (e.status === 400) {

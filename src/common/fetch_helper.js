@@ -39,6 +39,19 @@ export async function putData(url, data, token) {
   return responseData
 }
 
+export async function patchData(url, data, token) {
+
+  let config = {}
+  if (token) {
+    config['headers'] = {
+      'Authorization': 'Bearer ' + token
+    }
+  }
+
+  const {data: responseData} = await axios.put(baseUrl + url, data, config)
+  return responseData
+}
+
 export async function deleteData(url, token) {
 
   let config = {}
